@@ -1,0 +1,5 @@
+Use biometric fingerprint data to create private keys for use on the blockchain.
+
+main.go - entry point for application
+Fuzzy_vault.go - implements functionality from https://github.com/jwoogerd/fuzzy_vault in Golang. 
+eztxbuilder.go - builds transactions for Bitcoin testnet 3
