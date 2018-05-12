@@ -176,15 +176,15 @@ func generateRandomTemplate(n int) []float64 {
     return ret
 }
 
-func main(){
-    rand.Seed(42)
-    fmt.Printf("You alread know what it is! \n")
-
-    word := "hello"
-    template := generateRandomTemplate(30)
-    vault := Lock(word, template)
-    coeffs := Unlock(template, vault)
-    ret := Decode(coeffs)
-
-    fmt.Printf("%v\n", ret)
-}
+//func main(){
+//    rand.Seed(42)
+//    fmt.Printf("You alread know what it is! \n")
+//
+//    word := "hello"
+//    template := generateRandomTemplate(30)
+//    vault := Lock(word, template)
+//    coeffs := Unlock(template, vault)
+//    ret := Decode(coeffs)
+//
+//    fmt.Printf("%v\n", ret)
+//}

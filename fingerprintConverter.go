@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/binary"
 	"fmt"
+	"bytes"
 )
 
-func fingerprintConverter(data []float) string {
+func fingerprintConverter(data []float64) string {
 
 	var stringRepresentationOfFingerPrint string
 	for _, dataPoint := range data {
 
-		var buffer bytes.Buffer
+		buffer := new(bytes.Buffer)
 
-		err := binary.Write(&buffer, binary.BigEndian, dataPoint)
+		err := binary.Write(buffer, binary.BigEndian, dataPoint)
 		if err != nil {
 			fmt.Println("binary.Write failed:", err)
 		}
