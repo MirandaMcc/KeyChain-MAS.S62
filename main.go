@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
+	//"math/rand"
+
 	"github.com/btcsuite/btcd/chaincfg"
 )
 
@@ -11,12 +12,14 @@ var (
 	testnet3Parameters = &chaincfg.TestNet3Params
 )
 
-//App Entrance 
+//App Entrance
 func main() {
 	fmt.Printf("KeyChain\n")
 
 	//1 - TODO - key fingerprint data from file or whatever
-	fingerprint := "abcdefghijklmnop"
+	testData := []float{12.3434, 15.9090, 10.43434, 0.0345}
+	fingerprint := fingerprintConverter(testData)
+	fmt.Println(fingerprint)
 	// Call AddressFrom PrivateKey() to make a keypair
 	addressTo, _ := GenerateAddress(fingerprint)
 
@@ -33,9 +36,8 @@ func main() {
 
 	fmt.Printf("optx is: %s\n", optx)
 
-	//3 - TODO - push to blockchain 
+	//3 - TODO - push to blockchain
 	//You'll get a long hex string which you can test by running the transaction though bitcoin-cli's decoderawtransaction command `./bitcoin-cli decoderawtransaction (tx hex)`
-
 
 	return
 }
