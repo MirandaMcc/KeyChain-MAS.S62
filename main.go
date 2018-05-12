@@ -21,9 +21,12 @@ func main() {
 	fingerprint := fingerprintConverter(testData)
 	fmt.Println(fingerprint)
 	// Call AddressFrom PrivateKey() to make a keypair
-	//addressTo, _ := GenerateAddress(fingerprint)
+	privateKey := "mas.s62"
+	vault := Lock(privateKey, testData)
 
-	//fmt.Printf("address is: %s\n", result)
+	publicAddress, _ := GenerateAddress(privateKey)
+
+	fmt.Printf("address is: %s\n", publicAddress)
 
 	//Call EZTxBuilder to make a transaction
 	//2 - TODO - get other transaction details from user input
