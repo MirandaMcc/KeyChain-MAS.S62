@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-
+	"math/rand"
 	"github.com/btcsuite/btcd/chaincfg"
 )
 
@@ -16,20 +16,20 @@ func main() {
 	fmt.Printf("KeyChain\n")
 
 	//1 - TODO - key fingerprint data from file or whatever
-	string fingerprint = "abcdefghijklmnop"
+	fingerprint := "abcdefghijklmnop"
 	// Call AddressFrom PrivateKey() to make a keypair
 	addressTo, _ := GenerateAddress(fingerprint)
 
-	fmt.Printf("address is: %s\n", result)
+	//fmt.Printf("address is: %s\n", result)
 
 	//Call EZTxBuilder to make a transaction
 	//2 - TODO - get other transaction details from user input
-	string txFrom := "txid"
-	string addressFrom := "address"
-	int index := 0
-	string addressTo := "address" 
-	int valueOut := 0
-	optx := TxToHex(EZTxBuilder(txFrom, addressFrom, index, addressTo, fingerprint, valueOut))
+	txFrom := "txid"
+	addressFrom := "address"
+	index := 0
+	addressTo := "address"
+	valueOut := 0
+	optx := TxToHex(EZTxBuilder(txFrom, addressFrom, uint32(index), addressTo, fingerprint, int64(valueOut)))
 
 	fmt.Printf("optx is: %s\n", optx)
 

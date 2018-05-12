@@ -22,7 +22,7 @@ func TxToHex(tx *wire.MsgTx) string {
 	return fmt.Sprintf("%x", buf.Bytes())
 }
 
-func EZTxBuilder(string txFrom, string addressFrom, int index, string addressTo, string fingerprint, int valueOut) *wire.MsgTx {
+func EZTxBuilder(txFrom string, addressFrom string, index uint32, addressTo string, fingerprint string, valueOut int64) *wire.MsgTx {
 
 	// create a new, empty transaction, set version to 2
 	tx := wire.NewMsgTx(2)
@@ -121,7 +121,7 @@ func EZTxBuilder(string txFrom, string addressFrom, int index, string addressTo,
 	return tx
 }
 
-func GenerateAddress(string fingerprint) (string, error) {
+func GenerateAddress(fingerprint string) (string, error) {
 
 	// private key is the hash of some string (better to use real randomness
 	// or a real KDF but this is OK for class.
