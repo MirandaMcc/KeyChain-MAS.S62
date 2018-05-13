@@ -12,6 +12,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -56,9 +57,32 @@ func main() {
 	if err := gz.Close(); err != nil {
 		panic(err)
 	}
-
 	compressedOpReturnData := base64.StdEncoding.EncodeToString(b.Bytes())
 	fmt.Println("compressed String: ", compressedOpReturnData)
+	compressedOpReturnDataInByte := []byte(compressedOpReturnData)
+
+	fmt.Println("Length of compressed vault in bytes: ", len(compressedOpReturnDataInByte))
+	//numberOfSplits := math.Ceil(float64(len(compressedOpReturnDataInByte)) / float64(520.0))
+
+	var vaultPieces []byte
+	for pieceIndex := 0; pieceIndex < len(compressedOpReturnDataInByte); pieceIndex += 520 {
+		vaultPieces = append(vaultPieces, compressedOpReturnDataInByte[pieceIndex:int(math.Min(float64(pieceIndex+520), float64(len(compressedOpReturnDataInByte))))]...)
+	}
+
+	fmt.Println("Split vault: ", vaultPieces[0])
+	publicAddress, _ := GenerateAddress(privateKey)
+
+	fmt.Println("address is: %s\n", publicAddress)
+
+	//Call EZTxBuilder to make a transaction
+	//2 - TODO - get other transaction details from user input
+	txFrom := "1f497ac245eb25cd94157c290f62d042e3bdda1e57920b6d1d2c5cfa362c12da"
+	//addressFrom := "mpQQryVrYmGNPxVqNeE5RgoYAv2v66Psao"
+	index := uint32(30)
+	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
+	valueOut := int64(10000)
+	optx := TxToHex(OpReturnTxBuilder([]byte(compressedOpReturnData), txFrom, addressTo, valueOut, index, privateKey))
+	fmt.Printf("optx is: %s\n", optx)
 
 	decompressedOpReturnData, _ := base64.StdEncoding.DecodeString(compressedOpReturnData)
 	fmt.Println("Decoded string: ", decompressedOpReturnData)
@@ -77,20 +101,6 @@ func main() {
 	decodedPrivateKey := Decode(coeffs)
 	fmt.Println("coefficients: ", coeffs)
 	fmt.Println("decoded private key: ", decodedPrivateKey)
-
-	publicAddress, _ := GenerateAddress(privateKey)
-
-	fmt.Println("address is: %s\n", publicAddress)
-
-	//Call EZTxBuilder to make a transaction
-	//2 - TODO - get other transaction details from user input
-	txFrom := "1f497ac245eb25cd94157c290f62d042e3bdda1e57920b6d1d2c5cfa362c12da"
-	//addressFrom := "mpQQryVrYmGNPxVqNeE5RgoYAv2v66Psao"
-	index := uint32(30)
-	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
-	valueOut := int64(10000)
-	optx := TxToHex(OpReturnTxBuilder([]byte(compressedOpReturnData), txFrom, addressTo, valueOut, index, privateKey))
-	fmt.Printf("optx is: %s\n", optx)
 
 	//3 - TODO - push to blockchain
 	//You'll get a long hex string which you can test by running the transaction though bitcoin-cli's decoderawtransaction command `./bitcoin-cli decoderawtransaction (tx hex)`

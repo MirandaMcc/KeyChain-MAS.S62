@@ -1,193 +1,193 @@
 package main
 
 import (
-    "math"
-    "fmt"
-    "math/rand"
-    "strings"
-    "github.com/gonum/matrix/mat64"
+	"fmt"
+	"math"
+	"math/rand"
+	"strings"
+
+	"github.com/gonum/matrix/mat64"
 )
 
 var (
-    degree int = 4
-    t float64 = 10
-    r float64 = 40
+	degree int     = 4
+	t      float64 = 10
+	r      float64 = 40
 )
 
 func GetCoefficients(word string) []float64 {
-    word = strings.ToUpper(word)
-    n := len(word) / degree
-    if n < 1 {
-        n = 1
-    }
-    var substring []string
+	word = strings.ToUpper(word)
+	n := len(word) / degree
+	if n < 1 {
+		n = 1
+	}
+	var substring []string
 
-    for i := 0; i < len(word); i += n {
-        substring = append(substring, word[i:i+n])
-    }
-    var coeffs []float64
+	for i := 0; i < len(word); i += n {
+		substring = append(substring, word[i:i+n])
+	}
+	var coeffs []float64
 
-    for _, sub := range substring {
-        num := 0.0
-        for i, char := range sub {
-            num += float64(int(char)) * math.Pow10(2 * i)
-        }
-        coeffs = append(coeffs, num)
-    }
-    return coeffs
+	for _, sub := range substring {
+		num := 0.0
+		for i, char := range sub {
+			num += float64(int(char)) * math.Pow10(2*i)
+		}
+		coeffs = append(coeffs, num)
+	}
+	return coeffs
 }
 
 func EvalAt(x float64, coeffs []float64) float64 {
-    ret := 0.0
+	ret := 0.0
 
-    for i, coefficient := range coeffs {
-        ret += math.Pow(x, float64(i)) * coefficient
-    }
-    return ret
+	for i, coefficient := range coeffs {
+		ret += math.Pow(x, float64(i)) * coefficient
+	}
+	return ret
 }
 
 func Lock(secret string, template []float64) [][]float64 {
-    var vault [][]float64
-    coeffs := GetCoefficients(secret)
+	var vault [][]float64
+	coeffs := GetCoefficients(secret)
 
-    maxY := math.Inf(-1)
+	maxY := math.Inf(-1)
 
-    for _, point := range template {
-        y := EvalAt(point, coeffs)
-        if y > maxY {
-            maxY = y
-        }
-        vault = append(vault, []float64{point, y})
-    }
+	for _, point := range template {
+		y := EvalAt(point, coeffs)
+		if y > maxY {
+			maxY = y
+		}
+		vault = append(vault, []float64{point, y})
+	}
 
-    maxX := MaxFloat64Slice(template)
+	maxX := MaxFloat64Slice(template)
 
-    for i := t; i < r; i++ {
-        xI := rand.Float64() * maxX * 1.1
-        yI := rand.Float64() * maxY * 1.1
-        vault = append(vault, []float64{xI, yI})
-    }
+	for i := t; i < r; i++ {
+		xI := rand.Float64() * maxX * 1.1
+		yI := rand.Float64() * maxY * 1.1
+		vault = append(vault, []float64{xI, yI})
+	}
 
-    rand.Shuffle(len(vault), func(i, j int) {
+	rand.Shuffle(len(vault), func(i, j int) {
 		vault[i], vault[j] = vault[j], vault[i]
 	})
 
-
-    return vault
+	return vault
 }
 
-func ApproxEqual(a , b, epsilon float64) bool {
-    return math.Abs(a - b) < epsilon
+func ApproxEqual(a, b, epsilon float64) bool {
+	return math.Abs(a-b) < epsilon
 }
 
 func Unlock(template []float64, vault [][]float64) []float64 {
-    project :=  func(x float64) (float64, float64) {
-        for _, point := range vault {
-            if ApproxEqual(x, point[0], 0.001) {
-                return x, point[1]
-            }
-        }
-        return -1, -1
-    }
+	project := func(x float64) (float64, float64) {
+		for _, point := range vault {
+			if ApproxEqual(x, point[0], 0.001) {
+				return x, point[1]
+			}
+		}
+		return -1, -1
+	}
 
-    var tempX []float64
-    var tempY []float64
+	var tempX []float64
+	var tempY []float64
 
-    for _, val := range template {
-        if x, y := project(val); x != -1 {
-            tempX = append(tempX, x)
-            tempY = append(tempY, y)
-        }
-    }
+	for _, val := range template {
+		if x, y := project(val); x != -1 {
+			tempX = append(tempX, x)
+			tempY = append(tempY, y)
+		}
+	}
 
-    return polyfit(tempX, tempY)
+	return polyfit(tempX, tempY)
 }
 
 func polyfit(X, Y []float64) []float64 {
-    var ret []float64
+	var ret []float64
 
-    a := Vandermonde(X, degree)
-    b := mat64.NewDense(len(Y), 1, Y)
-    c := mat64.NewDense(degree+1, 1, nil)
+	a := Vandermonde(X, degree)
+	b := mat64.NewDense(len(Y), 1, Y)
+	c := mat64.NewDense(degree+1, 1, nil)
 
-    qr := new(mat64.QR)
-    qr.Factorize(a)
+	qr := new(mat64.QR)
+	qr.Factorize(a)
 
-    err := c.SolveQR(qr, false, b)
-    if err != nil {
-        fmt.Println(err)
-        return nil
-    } else {
-        mat64.Col(ret, 0, c)
+	err := c.SolveQR(qr, false, b)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	} else {
+		mat64.Col(ret, 0, c)
 
-        for i := 0; i < len(ret); i++ {
-            ret[i] = round(ret[i], 0.01)
-        }
+		for i := 0; i < len(ret); i++ {
+			ret[i] = round(ret[i], 0.01)
+		}
 
-        return ret
-    }
+		return ret
+	}
 }
 
 func Vandermonde(a []float64, degree int) *mat64.Dense {
-    x := mat64.NewDense(len(a), degree+1, nil)
-    for i := range a {
-        for j, p := 0, 1.; j <= degree; j, p = j+1, p*a[i] {
-            x.Set(i, j, p)
-        }
-    }
-    return x
+	x := mat64.NewDense(len(a), degree+1, nil)
+	for i := range a {
+		for j, p := 0, 1.; j <= degree; j, p = j+1, p*a[i] {
+			x.Set(i, j, p)
+		}
+	}
+	return x
 }
 
 func round(x, unit float64) float64 {
-    return math.Round(x/unit) * unit
+	return math.Round(x/unit) * unit
 }
 
 func Decode(coeffs []float64) string {
-    s := ""
-    for _, c := range coeffs {
-        num := int(math.Round(math.Pow(c, 3)))
-        if num == 0 {
-            continue
-        }
-        for num > 0 {
-            s += strings.ToLower(string(rune(num % 100)))
-            num /= 100.0
-        }
-    }
-    return s
+	s := ""
+	for _, c := range coeffs {
+		num := int(math.Round(math.Pow(c, 3)))
+		if num == 0 {
+			continue
+		}
+		for num > 0 {
+			s += strings.ToLower(string(rune(num % 100)))
+			num /= 100.0
+		}
+	}
+	return s
 }
 
 func MaxFloat64Slice(s []float64) float64 {
-    m := math.Inf(-1)
-    for _, e := range s {
-        if e > m {
-            m = e
-        }
-    }
-    return m
+	m := math.Inf(-1)
+	for _, e := range s {
+		if e > m {
+			m = e
+		}
+	}
+	return m
 }
 
 func generateRandomTemplate(n int) []float64 {
-    var ret []float64
-    for i := 0; i < n; i++ {
-        y := rand.Float64() * 100
-        ret = append(ret, y)
-    }
-    return ret
+	var ret []float64
+	for i := 0; i < n; i++ {
+		y := rand.Float64() * 100
+		ret = append(ret, y)
+	}
+	return ret
 }
 
-func main(){
-    rand.Seed(42)
-    fmt.Printf("You alread know what it is! \n")
+//func main(){
+//    rand.Seed(42)
+//    fmt.Printf("You alread know what it is! \n")
 
-    word := "hello"
-    template := generateRandomTemplate(30)
-    vault := Lock(word, template)
-    fmt.Println("vault: ", vault)
-    coeffs := Unlock(template, vault)
-    fmt.Println("coeffs ", coeffs)
-    ret := Decode(coeffs)
-    fmt.Println("ret: ", ret)
+//    word := "hello"
+//    template := generateRandomTemplate(30)
+//    vault := Lock(word, template)
+//    fmt.Println("vault: ", vault)
+//    coeffs := Unlock(template, vault)
+//    fmt.Println("coeffs ", coeffs)
+//    ret := Decode(coeffs)
+//    fmt.Println("ret: ", ret)
 
-    fmt.Printf("%v\n", ret)
-}
+//    fmt.Printf("%v\n", ret)
+//}
