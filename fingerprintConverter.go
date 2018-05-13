@@ -4,7 +4,15 @@ import (
 	"encoding/binary"
 	"fmt"
 	"bytes"
+	"reflect"
+	"unsafe"
 )
+
+func BytesToString(b []byte) string {
+	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	sh := reflect.StringHeader{bh.Data, bh.Len}
+	return *(*string)(unsafe.Pointer(&sh))
+}
 
 func fingerprintConverter(data []float64) string {
 
@@ -18,7 +26,7 @@ func fingerprintConverter(data []float64) string {
 			fmt.Println("binary.Write failed:", err)
 		}
 
-		snippet := string(buffer.Bytes())
+		snippet := BytesToString(buffer.Bytes())
 		stringRepresentationOfFingerPrint += snippet
 	}
 

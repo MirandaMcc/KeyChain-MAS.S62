@@ -121,7 +121,7 @@ func EZTxBuilder(txFrom string, addressFrom string, index uint32, addressTo stri
 	return tx
 }
 
-func GenerateAddress(fingerprint string) (string, error) {
+func GenerateAddress(phrase string) (string, error) {
 
 	// private key is the hash of some string (better to use real randomness
 	// or a real KDF but this is OK for class.
@@ -129,7 +129,7 @@ func GenerateAddress(fingerprint string) (string, error) {
 
 	//orig value : mpQQryVrYmGNPxVqNeE5RgoYAv2v66Psao
 	//class value: mas.s62
-	phraseHash := chainhash.DoubleHashB([]byte(fingerprint))
+	phraseHash := chainhash.DoubleHashB([]byte(phrase))
 
 	// make a new private key struct.  Private key structs also have a pubkey in them
 	priv, _ := btcec.PrivKeyFromBytes(btcec.S256(), phraseHash)
