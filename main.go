@@ -64,12 +64,15 @@ func main() {
 	fmt.Println("Length of compressed vault in bytes: ", len(compressedOpReturnDataInByte))
 	//numberOfSplits := math.Ceil(float64(len(compressedOpReturnDataInByte)) / float64(520.0))
 
-	var vaultPieces []byte
+	var vaultPieces [][]byte
 	for pieceIndex := 0; pieceIndex < len(compressedOpReturnDataInByte); pieceIndex += 520 {
-		vaultPieces = append(vaultPieces, compressedOpReturnDataInByte[pieceIndex:int(math.Min(float64(pieceIndex+520), float64(len(compressedOpReturnDataInByte))))]...)
+		piece := compressedOpReturnDataInByte[pieceIndex:int(math.Min(float64(pieceIndex+520), float64(len(compressedOpReturnDataInByte))))]
+		doubleByteOfPiece := [][]byte{piece}
+		vaultPieces = append(vaultPieces, doubleByteOfPiece...)
+		//fmt.Println("section: ", vaultPieces)
 	}
 
-	fmt.Println("Split vault: ", vaultPieces[0])
+	fmt.Println("Split vault: ", vaultPieces[1])
 	publicAddress, _ := GenerateAddress(privateKey)
 
 	fmt.Println("address is: %s\n", publicAddress)
