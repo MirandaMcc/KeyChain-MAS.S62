@@ -84,10 +84,17 @@ func main() {
 	index := uint32(30)
 	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
 	valueOut := int64(10000)
-	optx := OpReturnTxBuilder(vaultPieces[0], txFrom, addressTo, valueOut, index, privateKey)
-	fmt.Println("optx is: ", optx)
-	hexOpt := TxToHex(optx)
-	fmt.Println("hexopt: ", hexOpt)
+	var transactionStrings []string
+	for _, vaultPiece := range vaultPieces {
+		optx := OpReturnTxBuilder(vaultPiece, txFrom, addressTo, valueOut, index, privateKey)
+		hexOpt := TxToHex(optx)
+		transactionStrings = append(transactionStrings, hexOpt)
+	}
+
+	fmt.Println("Transactions: ", transactionStrings[1])
+
+	//	fmt.Println("optx is: ", optx)
+	//	fmt.Println("hexopt: ", hexOpt)
 
 	//decompressedOpReturnData, _ := base64.StdEncoding.DecodeString(compressedOpReturnData)
 	//fmt.Println("Decoded string: ", decompressedOpReturnData)
