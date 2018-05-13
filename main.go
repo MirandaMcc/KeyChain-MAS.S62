@@ -8,6 +8,12 @@ import (
 	//"encoding/binary"
 	//"strconv"
 	"strconv"
+	"bytes"
+	"compress/gzip"
+	"encoding/base64"
+	"io/ioutil"
+	"encoding/json"
+	"strings"
 )
 
 var (
@@ -28,13 +34,51 @@ func main() {
 	vault := Lock(privateKey, testData)
 
 	vaultString := "["
-	for _, vaultRow := range vault {
-
+	for index, vaultRow := range vault {
 		vaultString += "[" + strconv.FormatFloat(vaultRow[0], 'E', -1, 64) + "," + strconv.FormatFloat(vaultRow[1], 'E', -1, 64) + "]"
+		if index < len((vault))-1 {
+			vaultString += ","
+		}
+
 		//fmt.Println(vaultString)
 	}
 	vaultString += "]"
 	opReturnData := []byte(vaultString)
+
+	var b bytes.Buffer
+	gz := gzip.NewWriter(&b)
+	if _, err := gz.Write(opReturnData); err != nil {
+		panic(err)
+	}
+	if err := gz.Flush(); err != nil {
+		panic(err)
+	}
+	if err := gz.Close(); err != nil {
+		panic(err)
+	}
+
+	compressedOpReturnData := base64.StdEncoding.EncodeToString(b.Bytes())
+	fmt.Println("compressed String: ", compressedOpReturnData)
+
+
+
+	decompressedOpReturnData, _ := base64.StdEncoding.DecodeString(compressedOpReturnData)
+	fmt.Println("Decoded string: ", decompressedOpReturnData)
+	rdata := bytes.NewReader(decompressedOpReturnData)
+	r,_ := gzip.NewReader(rdata)
+	decodedVaultString, _ := (ioutil.ReadAll(r))
+	fmt.Println("Decoded stuff: ", string(decodedVaultString))
+
+	var vaultArray [][]float64
+	dec := json.NewDecoder(strings.NewReader(string(decodedVaultString)))
+	err := dec.Decode(&vaultArray)
+	fmt.Println(err, vaultArray)
+	fmt.Println("vaultArray: ", vaultArray)
+
+	coeffs := Unlock(testData, vaultArray)
+	decodedPrivateKey := Decode(coeffs)
+	fmt.Println("coefficients: ", coeffs)
+	fmt.Println("decoded private key: ", decodedPrivateKey)
 
 	publicAddress, _ := GenerateAddress(privateKey)
 
@@ -47,7 +91,7 @@ func main() {
 	index := uint32(30)
 	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
 	valueOut := int64(10000)
-	optx := TxToHex(OpReturnTxBuilder(opReturnData, txFrom, addressTo, valueOut, index, privateKey))
+	optx := TxToHex(OpReturnTxBuilder([]byte(compressedOpReturnData), txFrom, addressTo, valueOut, index, privateKey))
 	fmt.Printf("optx is: %s\n", optx)
 
 	//3 - TODO - push to blockchain

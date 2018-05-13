@@ -45,7 +45,7 @@ func OpReturnTxBuilder(opReturnData []byte, txId string, addressTo string, value
 	//	//fmt.Println(vaultString)
 	//}
 	//vaultString += "]"
-	//opReturnData := []byte(vaultString)
+	//opReturnData := []byte(opReturnData)
 
 	// build the op_return output script
 	// this is the OP_RETURN opcode, followed by a data push opcode, then the data.
