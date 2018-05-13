@@ -10,11 +10,11 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
-	"encoding/json"
-	"io/ioutil"
+	//"encoding/json"
+	//"io/ioutil"
 	"math"
 	"strconv"
-	"strings"
+	//"strings"
 )
 
 var (
@@ -84,26 +84,28 @@ func main() {
 	index := uint32(30)
 	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
 	valueOut := int64(10000)
-	optx := TxToHex(OpReturnTxBuilder([]byte(compressedOpReturnData), txFrom, addressTo, valueOut, index, privateKey))
-	fmt.Printf("optx is: %s\n", optx)
+	optx := OpReturnTxBuilder(vaultPieces[0], txFrom, addressTo, valueOut, index, privateKey)
+	fmt.Println("optx is: ", optx)
+	hexOpt := TxToHex(optx)
+	fmt.Println("hexopt: ", hexOpt)
 
-	decompressedOpReturnData, _ := base64.StdEncoding.DecodeString(compressedOpReturnData)
-	fmt.Println("Decoded string: ", decompressedOpReturnData)
-	rdata := bytes.NewReader(decompressedOpReturnData)
-	r, _ := gzip.NewReader(rdata)
-	decodedVaultString, _ := (ioutil.ReadAll(r))
-	fmt.Println("Decoded stuff: ", string(decodedVaultString))
+	//decompressedOpReturnData, _ := base64.StdEncoding.DecodeString(compressedOpReturnData)
+	//fmt.Println("Decoded string: ", decompressedOpReturnData)
+	//rdata := bytes.NewReader(decompressedOpReturnData)
+	//r, _ := gzip.NewReader(rdata)
+	//decodedVaultString, _ := (ioutil.ReadAll(r))
+	//fmt.Println("Decoded stuff: ", string(decodedVaultString))
 
-	var vaultArray [][]float64
-	dec := json.NewDecoder(strings.NewReader(string(decodedVaultString)))
-	err := dec.Decode(&vaultArray)
-	fmt.Println(err, vaultArray)
-	fmt.Println("vaultArray: ", vaultArray)
+	//var vaultArray [][]float64
+	//dec := json.NewDecoder(strings.NewReader(string(decodedVaultString)))
+	//err := dec.Decode(&vaultArray)
+	//fmt.Println(err, vaultArray)
+	//fmt.Println("vaultArray: ", vaultArray)
 
-	coeffs := Unlock(testData, vaultArray)
-	decodedPrivateKey := Decode(coeffs)
-	fmt.Println("coefficients: ", coeffs)
-	fmt.Println("decoded private key: ", decodedPrivateKey)
+	//coeffs := Unlock(testData, vaultArray)
+	//decodedPrivateKey := Decode(coeffs)
+	//fmt.Println("coefficients: ", coeffs)
+	//fmt.Println("decoded private key: ", decodedPrivateKey)
 
 	//3 - TODO - push to blockchain
 	//You'll get a long hex string which you can test by running the transaction though bitcoin-cli's decoderawtransaction command `./bitcoin-cli decoderawtransaction (tx hex)`
