@@ -24,8 +24,11 @@ func GetCoefficients(word string) []float64 {
 	var substring []string
 
 	for i := 0; i < len(word); i += n {
-		substring = append(substring, word[i:i+n])
+
+		top := int(math.Min(float64(len(word)), float64(i + n)))
+		substring = append(substring, word[i:top])
 	}
+
 	var coeffs []float64
 
 	for _, sub := range substring {
@@ -50,6 +53,7 @@ func EvalAt(x float64, coeffs []float64) float64 {
 func Lock(secret string, template []float64) [][]float64 {
 	var vault [][]float64
 	coeffs := GetCoefficients(secret)
+	fmt.Printf("Coded Coeffs: %v\n", coeffs)
 
 	maxY := math.Inf(-1)
 
@@ -104,7 +108,7 @@ func Unlock(template []float64, vault [][]float64) []float64 {
 }
 
 func polyfit(X, Y []float64) []float64 {
-	var ret []float64
+	ret := make([]float64, degree + 1)
 
 	a := Vandermonde(X, degree)
 	b := mat64.NewDense(len(Y), 1, Y)
@@ -114,6 +118,8 @@ func polyfit(X, Y []float64) []float64 {
 	qr.Factorize(a)
 
 	err := c.SolveQR(qr, false, b)
+
+	// fmt.Println(c.Dims())
 	if err != nil {
 		fmt.Println(err)
 		return nil
@@ -145,13 +151,14 @@ func round(x, unit float64) float64 {
 func Decode(coeffs []float64) string {
 	s := ""
 	for _, c := range coeffs {
-		num := int(math.Round(math.Pow(c, 3)))
-		if num == 0 {
-			continue
-		}
-		for num > 0 {
-			s += strings.ToLower(string(rune(num % 100)))
-			num /= 100.0
+
+		if c == 0 {continue}
+
+		log100 := (int(math.Log10(c)) + 1) / 2
+
+		for i := 0; i < log100; i++ {
+			char := int(c / math.Pow(100, float64(i))) % 100
+			s += string(rune(char))
 		}
 	}
 	return s
@@ -176,18 +183,16 @@ func generateRandomTemplate(n int) []float64 {
 	return ret
 }
 
-//func main(){
+// func main(){
 //    rand.Seed(42)
-//    fmt.Printf("You alread know what it is! \n")
-
-//    word := "hello"
+//    fmt.Printf("Locking Phrase in Fuzzy Vault\n")
+//
+//    word := "WHAT'S GOOD!"
 //    template := generateRandomTemplate(30)
 //    vault := Lock(word, template)
-//    fmt.Println("vault: ", vault)
+//    fmt.Println("vault:", vault)
 //    coeffs := Unlock(template, vault)
-//    fmt.Println("coeffs ", coeffs)
+//    fmt.Println("Decoded Coeffs:", coeffs)
 //    ret := Decode(coeffs)
-//    fmt.Println("ret: ", ret)
-
-//    fmt.Printf("%v\n", ret)
-//}
+//    fmt.Println("Decoded String:", ret)
+// }
