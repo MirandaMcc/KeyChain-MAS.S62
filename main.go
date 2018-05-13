@@ -73,7 +73,7 @@ func main() {
 	}
 
 	fmt.Println("Split vault: ", vaultPieces[1])
-	publicAddress, _ := GenerateAddress(privateKey)
+	publicAddress, _ := GenerateAddress("KeyChain")
 
 	fmt.Println("address is: ", publicAddress)
 
@@ -81,8 +81,8 @@ func main() {
 	//2 - TODO - get other transaction details from user input
 	txFrom := "1f497ac245eb25cd94157c290f62d042e3bdda1e57920b6d1d2c5cfa362c12da"
 	//addressFrom := "mpQQryVrYmGNPxVqNeE5RgoYAv2v66Psao"
-	index := uint32(30)
-	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
+	index := uint32(32)
+	addressTo := publicAddress
 	valueOut := int64(10000)
 	var transactionStrings []string
 	for _, vaultPiece := range vaultPieces {
@@ -91,7 +91,8 @@ func main() {
 		transactionStrings = append(transactionStrings, hexOpt)
 	}
 
-	fmt.Println("Transactions: ", transactionStrings[1])
+	fmt.Println("Transaction 0: ", transactionStrings[0])
+	fmt.Println("Transaction 1: ", transactionStrings[1])
 
 	//	fmt.Println("optx is: ", optx)
 	//	fmt.Println("hexopt: ", hexOpt)
