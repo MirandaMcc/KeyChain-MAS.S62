@@ -11,7 +11,7 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	//"encoding/json"
-	//"io/ioutil"
+	"io/ioutil"
 	"math"
 	"strconv"
 	//"strings"
@@ -64,15 +64,15 @@ func main() {
 	fmt.Println("Length of compressed vault in bytes: ", len(compressedOpReturnDataInByte))
 	//numberOfSplits := math.Ceil(float64(len(compressedOpReturnDataInByte)) / float64(520.0))
 
-	var vaultPieces [][]byte
+	var compressedVaultPieces [][]byte
 	for pieceIndex := 0; pieceIndex < len(compressedOpReturnDataInByte); pieceIndex += 520 {
 		piece := compressedOpReturnDataInByte[pieceIndex:int(math.Min(float64(pieceIndex+520), float64(len(compressedOpReturnDataInByte))))]
 		doubleByteOfPiece := [][]byte{piece}
-		vaultPieces = append(vaultPieces, doubleByteOfPiece...)
+		compressedVaultPieces = append(compressedVaultPieces, doubleByteOfPiece...)
 		//fmt.Println("section: ", vaultPieces)
 	}
 
-	fmt.Println("Split vault: ", vaultPieces[1])
+	//fmt.Println("Split vault: ", compressedVaultPieces[1])
 	publicAddress, _ := GenerateAddress("KeyChain")
 
 	fmt.Println("address is: ", publicAddress)
@@ -85,24 +85,29 @@ func main() {
 	addressTo := publicAddress
 	valueOut := int64(10000)
 	var transactionStrings []string
-	for _, vaultPiece := range vaultPieces {
-		optx := OpReturnTxBuilder(vaultPiece, txFrom, addressTo, valueOut, index, privateKey)
+	for _, compressedVaultPiece := range compressedVaultPieces {
+		optx := OpReturnTxBuilder(compressedVaultPiece, txFrom, addressTo, valueOut, index, privateKey)
 		hexOpt := TxToHex(optx)
 		transactionStrings = append(transactionStrings, hexOpt)
 	}
 
 	fmt.Println("Transaction 0: ", transactionStrings[0])
 	fmt.Println("Transaction 1: ", transactionStrings[1])
-
 	//	fmt.Println("optx is: ", optx)
 	//	fmt.Println("hexopt: ", hexOpt)
 
-	//decompressedOpReturnData, _ := base64.StdEncoding.DecodeString(compressedOpReturnData)
-	//fmt.Println("Decoded string: ", decompressedOpReturnData)
-	//rdata := bytes.NewReader(decompressedOpReturnData)
-	//r, _ := gzip.NewReader(rdata)
-	//decodedVaultString, _ := (ioutil.ReadAll(r))
-	//fmt.Println("Decoded stuff: ", string(decodedVaultString))
+	decompressedOpReturnData0, _ := base64.StdEncoding.DecodeString(string(compressedVaultPieces[0]))
+	rdata0 := bytes.NewReader(decompressedOpReturnData0)
+	r0, _ := gzip.NewReader(rdata0)
+	decodedVaultPiece, _ := (ioutil.ReadAll(r0))
+	decodedVaultString := string(decodedVaultPiece)
+
+	decompressedOpReturnData1, _ := base64.StdEncoding.DecodeString(string(compressedVaultPieces[1]))
+	rdata1 := bytes.NewReader(decompressedOpReturnData1)
+	r1, _ := gzip.NewReader(rdata1)
+	pieceDecodedVaultString, _ := (ioutil.ReadAll(r1))
+	decodedVaultString += string(pieceDecodedVaultString)
+	fmt.Println("Decoded string: ", decodedVaultString)
 
 	//var vaultArray [][]float64
 	//dec := json.NewDecoder(strings.NewReader(string(decodedVaultString)))
