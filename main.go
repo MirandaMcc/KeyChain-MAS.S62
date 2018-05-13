@@ -75,7 +75,7 @@ func main() {
 	fmt.Println("Split vault: ", vaultPieces[1])
 	publicAddress, _ := GenerateAddress(privateKey)
 
-	fmt.Println("address is: %s\n", publicAddress)
+	fmt.Println("address is: ", publicAddress)
 
 	//Call EZTxBuilder to make a transaction
 	//2 - TODO - get other transaction details from user input
