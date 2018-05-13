@@ -6,7 +6,6 @@ import (
 	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
-	//"strconv"
 )
 
 func OpReturnTxBuilder(opReturnData []byte, txId string, addressTo string, valueOut int64, indexId uint32, privateKey string) *wire.MsgTx {
@@ -35,18 +34,6 @@ func OpReturnTxBuilder(opReturnData []byte, txId string, addressTo string, value
 	// done with inputs for now.  Build outputs.  There will be 2 outputs,
 	// the OP_RETURN output and the normal pubkey hash output.
 	// The OP_RETURN output will be unspendable, so we should put 0 coins there.
-
-	// Put a message here with your name or MIT ID number so I can find your
-	// submission on the blockchain.
-	//vaultString := "["
-	//for _, vaultRow := range vault {
-	//
-	//	vaultString += "[" + strconv.FormatFloat(vaultRow[0], 'E', -1, 64) + "," + strconv.FormatFloat(vaultRow[1], 'E', -1, 64) + "]"
-	//	//fmt.Println(vaultString)
-	//}
-	//vaultString += "]"
-	//opReturnData := []byte(opReturnData)
-
 	// build the op_return output script
 	// this is the OP_RETURN opcode, followed by a data push opcode, then the data.
 	opReturnScript, err :=
@@ -83,7 +70,14 @@ func OpReturnTxBuilder(opReturnData []byte, txId string, addressTo string, value
 
 	// finally we need to sign.  Same as EZ func.
 	// we already know the address you're sending from
-	spendFromScript, err := txscript.PayToAddrScript(sendToAddress)
+
+	prevAddressString := "mpQQryVrYmGNPxVqNeE5RgoYAv2v66Psao" // put the address you're sending "from" here
+	prevAddress, err := btcutil.DecodeAddress(prevAddressString, testnet3Parameters)
+	if err != nil {
+		panic(err)
+	}
+
+	spendFromScript, err := txscript.PayToAddrScript(prevAddress)
 
 	phraseHash := chainhash.DoubleHashB([]byte(privateKey))
 	priv, _ := btcec.PrivKeyFromBytes(btcec.S256(), phraseHash)
