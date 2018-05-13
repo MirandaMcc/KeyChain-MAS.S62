@@ -48,10 +48,10 @@ func main() {
 	addressTo := "muNaPrVz8D2KcnjdQTZwFreKyw2ef8aDnA"
 	valueOut := int64(10000)
 	optx := TxToHex(OpReturnTxBuilder(opReturnData, txFrom, addressTo, valueOut, index, privateKey))
+
 	fmt.Printf("optx is: %s\n", optx)
 
 	//3 - TODO - push to blockchain
 	//You'll get a long hex string which you can test by running the transaction though bitcoin-cli's decoderawtransaction command `./bitcoin-cli decoderawtransaction (tx hex)`
 
-	return
 }
