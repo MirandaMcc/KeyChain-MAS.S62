@@ -21,20 +21,20 @@ func main() {
 	fingerprint := fingerprintConverter(testData)
 	fmt.Println(fingerprint)
 	// Call AddressFrom PrivateKey() to make a keypair
-	//addressTo, _ := GenerateAddress(fingerprint)
+	address, _ := GenerateAddress(fingerprint)
 
 	//fmt.Printf("address is: %s\n", result)
 
 	//Call EZTxBuilder to make a transaction
 	//2 - TODO - get other transaction details from user input
-	//txFrom := "txid"
-	//addressFrom := "address"
-	//index := 0
-	//addressTo := "address"
-	//valueOut := 0
-	//optx := TxToHex(EZTxBuilder(txFrom, addressFrom, uint32(index), addressTo, fingerprint, int64(valueOut)))
-	//
-	//fmt.Printf("optx is: %s\n", optx)
+	txFrom := "txid"
+	addressFrom := "address"
+	index := 0
+	addressTo := "address"
+	valueOut := 0
+	optx := TxToHex(EZTxBuilder(txFrom, addressFrom, uint32(index), addressTo, fingerprint, int64(valueOut)))
+
+	fmt.Printf("optx is: %s\n", optx)
 
 	//3 - TODO - push to blockchain
 	//You'll get a long hex string which you can test by running the transaction though bitcoin-cli's decoderawtransaction command `./bitcoin-cli decoderawtransaction (tx hex)`
