@@ -182,17 +182,3 @@ func generateRandomTemplate(n int) []float64 {
 	}
 	return ret
 }
-
- //func main(){
- //   rand.Seed(42)
- //   fmt.Printf("Locking Phrase in Fuzzy Vault\n")
- //
- //   word := "What's up?"
- //   template := generateRandomTemplate(30)
- //   vault := Lock(word, template)
- //   fmt.Println("vault:", vault)
- //   coeffs := Unlock(template, vault)
- //   fmt.Println("Decoded Coeffs:", coeffs)
- //   ret := Decode(coeffs)
- //   fmt.Println("Decoded String:", ret)
- //}
