@@ -1,5 +1,5 @@
-MAS.S62 Final Project: KeyChain.
-Uses biometric fingerprint data to create private keys for use on the blockchain.
+#MAS.S62 Final Project: KeyChain.
+Uses biometric fingerprint data to recover private keys. Vault = Lock(PK, FP) => Vault is put on the blockchain => Vault is recovered from blockchain => PK = Unlock(Vault, FP).
 
 main.go - entry point for application
 fuzzy_vault.go - implements functionality from https://github.com/jwoogerd/fuzzy_vault in Golang.
